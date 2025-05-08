@@ -177,6 +177,88 @@ const mealPlans = {
       },
     ],
   },
+  maintenance: {
+    breakfast: [
+      {
+        name: "Avocado Toast with Eggs",
+        calories: 420,
+        protein: 20,
+        carbs: 35,
+        fat: 22,
+        ingredients: ["Whole grain bread", "Avocado", "Eggs", "Cherry tomatoes", "Microgreens"],
+        image: "https://images.unsplash.com/photo-1588137378633-dea1336ce1e2?w=300&h=200&fit=crop",
+      },
+      {
+        name: "Overnight Oats",
+        calories: 380,
+        protein: 15,
+        carbs: 45,
+        fat: 18,
+        ingredients: ["Rolled oats", "Almond milk", "Chia seeds", "Honey", "Mixed berries"],
+        image: "https://images.unsplash.com/photo-1517093602195-b40af9261bdb?w=300&h=200&fit=crop",
+      },
+    ],
+    lunch: [
+      {
+        name: "Mediterranean Bowl",
+        calories: 480,
+        protein: 25,
+        carbs: 45,
+        fat: 24,
+        ingredients: ["Quinoa", "Grilled chicken", "Cucumber", "Feta cheese", "Olives", "Hummus"],
+        image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=300&h=200&fit=crop",
+      },
+      {
+        name: "Tuna Salad Wrap",
+        calories: 450,
+        protein: 28,
+        carbs: 40,
+        fat: 20,
+        ingredients: ["Whole wheat wrap", "Tuna", "Greek yogurt", "Celery", "Red onion", "Lettuce"],
+        image: "https://images.unsplash.com/photo-1603046891741-c2a97a5a1b2c?w=300&h=200&fit=crop",
+      },
+    ],
+    dinner: [
+      {
+        name: "Baked Chicken with Sweet Potato",
+        calories: 520,
+        protein: 35,
+        carbs: 45,
+        fat: 22,
+        ingredients: ["Chicken breast", "Sweet potato", "Broccoli", "Olive oil", "Herbs"],
+        image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop",
+      },
+      {
+        name: "Vegetable Stir Fry with Tofu",
+        calories: 480,
+        protein: 22,
+        carbs: 50,
+        fat: 20,
+        ingredients: ["Tofu", "Brown rice", "Bell peppers", "Broccoli", "Soy sauce", "Ginger"],
+        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300&h=200&fit=crop",
+      },
+    ],
+    snacks: [
+      {
+        name: "Greek Yogurt with Granola",
+        calories: 220,
+        protein: 15,
+        carbs: 25,
+        fat: 8,
+        ingredients: ["Greek yogurt", "Granola", "Honey", "Cinnamon"],
+        image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=300&h=200&fit=crop",
+      },
+      {
+        name: "Mixed Nuts and Dried Fruit",
+        calories: 280,
+        protein: 8,
+        carbs: 30,
+        fat: 16,
+        ingredients: ["Almonds", "Walnuts", "Dried cranberries", "Dark chocolate chips"],
+        image: "https://images.unsplash.com/photo-1571407509209-73d3e4a45892?w=300&h=200&fit=crop",
+      },
+    ],
+  },
 };
 
 const dietaryRestrictions = [
@@ -212,6 +294,8 @@ const CustomDietPlan = () => {
       setSelectedPlan(mealPlans.weightLoss);
     } else if (dietPurpose === "muscle-build") {
       setSelectedPlan(mealPlans.muscleBuild);
+    } else if (dietPurpose === "maintenance") {
+      setSelectedPlan(mealPlans.maintenance);
     }
     setStep(3);
   };
@@ -248,7 +332,7 @@ const CustomDietPlan = () => {
     
     // Add diet plan details
     let y = 30;
-    doc.text(`Goal: ${dietPurpose === "weight-loss" ? "Weight Loss" : "Muscle Building"}`, 10, y);
+    doc.text(`Goal: ${dietPurpose === "weight-loss" ? "Weight Loss" : dietPurpose === "muscle-build" ? "Muscle Building" : "Maintenance"}`, 10, y);
     y += 10;
     doc.text(`Target Calories: ${calorieGoal} per day`, 10, y);
     y += 10;
@@ -604,7 +688,7 @@ const CustomDietPlan = () => {
               <div>
                 <h2 className="text-xl font-bold">Your Custom Diet Plan</h2>
                 <p className="text-fitness-gray mt-1">
-                  Based on your {dietPurpose === "weight-loss" ? "weight loss" : "muscle building"} goal with {calorieGoal} calorie target
+                  Based on your {dietPurpose === "weight-loss" ? "weight loss" : dietPurpose === "muscle-build" ? "muscle building" : "maintenance"} goal with {calorieGoal} calorie target
                 </p>
               </div>
               
@@ -976,7 +1060,7 @@ const CustomDietPlan = () => {
                 <div className="bg-fitness-dark-gray p-4 rounded-lg text-center">
                   <div className="text-xs text-fitness-gray mb-1">Diet Type</div>
                   <div className="text-xl font-bold">
-                    {dietPurpose === "weight-loss" ? "Weight Loss" : "Muscle Building"}
+                    {dietPurpose === "weight-loss" ? "Weight Loss" : dietPurpose === "muscle-build" ? "Muscle Building" : "Maintenance"}
                   </div>
                 </div>
                 
@@ -1017,12 +1101,7 @@ const CustomDietPlan = () => {
                     Create New Plan
                   </Button>
                   
-                  <Button 
-                    className="bg-fitness-green hover:bg-fitness-green/80 text-black"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download PDF
-                  </Button>
+                  
                 </div>
               </div>
             </div>
