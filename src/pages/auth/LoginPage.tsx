@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,7 +13,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signIn, signInWithGoogle, resetPassword } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +31,7 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await signIn(email, password);
       toast({
         title: "Login successful",
         description: "Welcome back to TRAINify!",
@@ -41,7 +40,7 @@ const LoginPage = () => {
     } catch (error) {
       toast({
         title: "Login failed",
-        description: "Please check your credentials and try again.",
+        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {
@@ -52,17 +51,16 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      // For demo purposes, we'll just use the regular login with preset credentials
-      await login("john@example.com", "password123");
+      await signInWithGoogle();
       toast({
-        title: "Google login successful",
+        title: "Login successful",
         description: "Welcome back to TRAINify!",
       });
       navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Google login failed",
-        description: "Please try again later.",
+        description: error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -70,11 +68,29 @@ const LoginPage = () => {
     }
   };
 
-  const handleForgotPassword = () => {
-    toast({
-      title: "Password reset",
-      description: "If your email is registered, you'll receive a password reset link.",
-    });
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        title: "Email required",
+        description: "Please enter your email address to reset your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await resetPassword(email);
+      toast({
+        title: "Password reset email sent",
+        description: "Please check your email for password reset instructions.",
+      });
+    } catch (error) {
+      toast({
+        title: "Password reset failed",
+        description: error instanceof Error ? error.message : "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -94,60 +110,62 @@ const LoginPage = () => {
           <p className="text-fitness-gray mt-2">Log in to continue your fitness journey</p>
         </div>
         
-        <form onSubmit={handleLogin}>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                required
-                className="bg-fitness-dark-gray border-fitness-dark-gray text-white"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <Label htmlFor="password">Password</Label>
-                <button 
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-xs text-fitness-green hover:underline"
-                >
-                  Forgot password?
-                </button>
-              </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  required
-                  className="bg-fitness-dark-gray border-fitness-dark-gray text-white pr-10"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-fitness-gray"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-            
-            <Button
-              type="submit"
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              required
+              className="bg-fitness-dark-gray border-fitness-dark-gray text-white"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="w-full bg-fitness-green hover:bg-fitness-green/80 text-black font-semibold py-6"
-            >
-              {isLoading ? "Logging in..." : "Log In"}
-            </Button>
+            />
           </div>
+          
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <Label htmlFor="password">Password</Label>
+              <button 
+                type="button"
+                onClick={handleForgotPassword}
+                className="text-xs text-fitness-green hover:underline"
+                disabled={isLoading}
+              >
+                Forgot password?
+              </button>
+            </div>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                className="bg-fitness-dark-gray border-fitness-dark-gray text-white pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-fitness-gray"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+          
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-fitness-green hover:bg-fitness-green/80 text-black font-semibold py-6"
+          >
+            {isLoading ? "Logging in..." : "Log In"}
+          </Button>
         </form>
         
         <div className="mt-6 text-center">

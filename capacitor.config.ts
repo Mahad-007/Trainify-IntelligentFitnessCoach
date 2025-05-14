@@ -1,15 +1,27 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.trainify.app',
   appName: 'Trainify',
   webDir: 'dist',
   server: {
-    androidScheme: 'https'
+    androidScheme: 'https',
+    cleartext: true
+  },
+  android: {
+    buildOptions: {
+      keystorePath: undefined,
+      keystorePassword: undefined,
+      keystoreAlias: undefined,
+      keystoreAliasPassword: undefined,
+    }
   },
   plugins: {
-    Camera: {
-      permissions: ['CAMERA', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']
+    GoogleAuth: {
+      scopes: ['profile', 'email'],
+      serverClientId: process.env.VITE_GOOGLE_CLIENT_ID,
+      androidClientId: process.env.VITE_ANDROID_CLIENT_ID,
+      iosClientId: process.env.VITE_IOS_CLIENT_ID,
     }
   }
 };
