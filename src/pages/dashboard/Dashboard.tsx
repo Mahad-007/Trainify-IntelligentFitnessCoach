@@ -30,7 +30,11 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, {user?.name.split(' ')[0]}</h1>
+            <h1 className="text-3xl font-bold">
+ Welcome back, {user?.displayName?.split(' ')[0] || user?.email || "Guest"}
+
+</h1>
+
             <p className="text-fitness-gray mt-1">{formattedDate}</p>
           </div>
           <div className="mt-4 md:mt-0">

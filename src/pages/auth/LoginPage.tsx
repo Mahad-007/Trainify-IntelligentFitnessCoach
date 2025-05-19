@@ -1,11 +1,35 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+
+// Your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCRh6pWku8NKqOcLit0XO0kJHBo3NZePQk",
+  authDomain: "trainify-6e4f3.firebaseapp.com",
+  projectId: "trainify-6e4f3",
+  storageBucket: "trainify-6e4f3.appspot.com",
+  messagingSenderId: "385251908885",
+  appId: "1:385251908885:web:6b83fc7d1ee014b7d79d1c",
+  measurementId: "G-DGX9W0527X",
+};
+
+// Initialize Firebase app
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,12 +37,10 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signInWithGoogle, resetPassword } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Form validation
+
     if (!email || !password) {
       toast({
         title: "Missing information",
@@ -31,7 +53,7 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      await signIn(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "Login successful",
         description: "Welcome back to TRAINify!",
@@ -40,7 +62,10 @@ const LoginPage = () => {
     } catch (error) {
       toast({
         title: "Login failed",
-        description: error instanceof Error ? error.message : "Please check your credentials and try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Please check your credentials and try again.",
         variant: "destructive",
       });
     } finally {
@@ -51,7 +76,7 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      await signInWithGoogle();
+      await signInWithPopup(auth, googleProvider);
       toast({
         title: "Login successful",
         description: "Welcome back to TRAINify!",
@@ -60,7 +85,8 @@ const LoginPage = () => {
     } catch (error) {
       toast({
         title: "Google login failed",
-        description: error instanceof Error ? error.message : "Please try again later.",
+        description:
+          error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
     } finally {
@@ -79,7 +105,7 @@ const LoginPage = () => {
     }
 
     try {
-      await resetPassword(email);
+      await sendPasswordResetEmail(auth, email);
       toast({
         title: "Password reset email sent",
         description: "Please check your email for password reset instructions.",
@@ -87,7 +113,8 @@ const LoginPage = () => {
     } catch (error) {
       toast({
         title: "Password reset failed",
-        description: error instanceof Error ? error.message : "Please try again later.",
+        description:
+          error instanceof Error ? error.message : "Please try again later.",
         variant: "destructive",
       });
     }
@@ -102,14 +129,15 @@ const LoginPage = () => {
             Back to home
           </Link>
         </div>
-        
+
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-white">
-            Welcome to <span className="text-fitness-green">TRAIN</span><span>ify</span>
+            Welcome to <span className="text-fitness-green">TRAIN</span>
+            <span>ify</span>
           </h2>
           <p className="text-fitness-gray mt-2">Log in to continue your fitness journey</p>
         </div>
-        
+
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -124,11 +152,11 @@ const LoginPage = () => {
               disabled={isLoading}
             />
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex justify-between">
               <Label htmlFor="password">Password</Label>
-              <button 
+              <button
                 type="button"
                 onClick={handleForgotPassword}
                 className="text-xs text-fitness-green hover:underline"
@@ -158,7 +186,7 @@ const LoginPage = () => {
               </button>
             </div>
           </div>
-          
+
           <Button
             type="submit"
             disabled={isLoading}
@@ -167,7 +195,7 @@ const LoginPage = () => {
             {isLoading ? "Logging in..." : "Log In"}
           </Button>
         </form>
-        
+
         <div className="mt-6 text-center">
           <p className="text-fitness-gray">
             Don't have an account?{" "}
@@ -176,7 +204,7 @@ const LoginPage = () => {
             </Link>
           </p>
         </div>
-        
+
         <div className="mt-8 pt-6 border-t border-fitness-dark-gray">
           <div className="flex justify-center">
             <Button
